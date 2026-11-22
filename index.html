@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>شاشة البيت</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--glass:rgba(8,22,42,.42);--line:rgba(255,255,255,.16);--gold:#ffd34d}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#0b1830;color:#fff;font-family:Tajawal,Tahoma,Arial,sans-serif;cursor:none}
+#sky{position:fixed;inset:0;transition:background 90s linear}
+#city{position:fixed;left:0;right:0;bottom:0;width:100%;height:60vh}
+#shade{position:fixed;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,.5))}
+.wrap{position:relative;height:100vh;display:grid;grid-template-columns:1.1fr 1fr;grid-template-rows:1fr auto auto;gap:1.8vh 2.6vw;padding:3.6vh 3.6vw 0}
+.glass{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:2vh}
+.main{display:flex;flex-direction:column;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.clock{font-weight:300;font-size:18vh;line-height:.95;direction:ltr;display:flex;align-items:flex-end;justify-content:flex-end;gap:1vw;align-self:flex-start}
+.clock small{font-size:4.5vh;font-weight:400;margin-bottom:2.4vh}
+.clock .sec{font-size:5vh;opacity:.55;margin-bottom:2.4vh}
+.date{font-size:3.6vh;font-weight:500;margin-top:1.6vh}
+.hijri{font-size:2.8vh;opacity:.85;margin-top:.5vh}
+.next{margin-top:3vh;display:inline-flex;align-items:center;gap:1.2vw;padding:1.4vh 1.6vw;align-self:flex-start}
+.next b{font-size:2.6vh;font-weight:500;opacity:.85}
+.next span{font-size:5vh;font-weight:500;color:var(--gold);direction:ltr;font-variant-numeric:tabular-nums}
+.side{display:flex;flex-direction:column;gap:1.8vh;min-height:0}
+.wx{padding:2vh 1.8vw;display:grid;grid-template-columns:auto 1fr;gap:1.4vw;align-items:center}
+.wx .now{display:flex;align-items:center;gap:1vw}
+.wx .ic{width:8vh;height:8vh}
+.wx .t{font-size:7vh;font-weight:300;direction:ltr}
+.wx .d{font-size:2.2vh;line-height:1.5}
+.wx .d b{font-size:2.5vh;font-weight:500;display:block}
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:.8vw;border-inline-start:1px solid var(--line);padding-inline-start:1.4vw}
+.day{text-align:center;font-size:2vh}
+.day svg{width:4.6vh;height:4.6vh;display:block;margin:.4vh auto}
+.day i{font-style:normal;direction:ltr;display:block;opacity:.9}
+.card{padding:2.4vh 2vw;flex:1;display:flex;flex-direction:column;min-height:0}
+.card h3{font-size:2.3vh;font-weight:700;display:flex;justify-content:space-between;margin-bottom:1.4vh}
+.card h3 span{font-weight:400;opacity:.65}
+#body{flex:1;transition:opacity .8s;display:flex;flex-direction:column;justify-content:center}
+#body .txt{font-size:3vh;line-height:1.8}
+#body .ayah{font-family:Amiri,serif;font-size:4.2vh;line-height:1.9;text-align:center}
+#body .src{font-size:2vh;opacity:.7;margin-top:1.2vh}
+#body .center{text-align:center}
+.prayers{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,1fr);overflow:hidden}
+.p{padding:1.6vh 1vw;text-align:center;border-inline-start:1px solid var(--line);position:relative}
+.p:first-child{border:0}
+.p b{display:block;font-size:2.2vh;font-weight:500;opacity:.85}
+.p i{display:block;font-style:normal;font-size:4vh;font-weight:500;direction:ltr;margin-top:.3vh}
+.p i small{font-size:.5em}
+.p em{display:block;font-style:normal;font-size:1.7vh;opacity:.6;min-height:2.2vh}
+.p.next-p{background:rgba(255,211,77,.18)}
+.p.next-p b,.p.next-p i{color:var(--gold)}
+.p.soon{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{background:rgba(255,211,77,.36)}}
+.ticker{grid-column:1/-1;margin:0 -3.6vw;height:5.4vh;background:rgba(0,0,0,.55);display:flex;align-items:center;overflow:hidden;font-size:2.5vh}
+.ticker .lbl{flex:none;background:#b3202a;height:100%;display:flex;align-items:center;padding:0 1.6vw;font-weight:700;z-index:1}
+.ticker .run{flex:1;overflow:hidden;white-space:nowrap;position:relative;height:100%;display:flex;align-items:center}
+.ticker .run span{display:inline-block;padding-inline-start:100%;animation:tick linear infinite}
+@keyframes tick{to{transform:translateX(100%)}}
+#overlay{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(18,40,70,.92),rgba(3,8,18,.97));text-align:center;z-index:5}
+#overlay.on{display:flex}
+#overlay h1{font-size:9vh;font-weight:700;color:var(--gold)}
+#overlay p{font-size:3.4vh;opacity:.85;margin-top:2vh}
+#overlay .cd{font-size:16vh;font-weight:300;direction:ltr;margin-top:2vh;font-variant-numeric:tabular-nums}
+#night{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity 60s;z-index:4}
+.hide{opacity:0}
+.lite .glass{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(8,20,38,.66)}
+.lite #sky{transition:none}
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<svg id="city" viewBox="0 0 1600 600" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="b1" x1="0" x2="1"><stop offset="0" stop-color="#2d4258"/><stop offset=".55" stop-color="#5d7b93"/><stop offset="1" stop-color="#22344a"/></linearGradient>
+    <linearGradient id="b2" x1="0" x2="1"><stop offset="0" stop-color="#7a6a55"/><stop offset=".5" stop-color="#c9a77a"/><stop offset="1" stop-color="#6b5a47"/></linearGradient>
+    <linearGradient id="b3" x1="0" x2="1"><stop offset="0" stop-color="#1f3b52"/><stop offset=".5" stop-color="#3f7a9c"/><stop offset="1" stop-color="#173045"/></linearGradient>
+    <pattern id="win" width="10" height="14" patternUnits="userSpaceOnUse"><rect x="1" y="2" width="8" height="2" fill="#fff" opacity=".18"/></pattern>
+  </defs>
+  <g id="bldgs"></g>
+</svg>
+<div id="shade"></div>
+
+<div class="wrap">
+  <section class="main">
+    <div class="clock"><span id="time">--:--</span><small id="ampm"></small></div>
+    <div class="date" id="greg"></div>
+    <div class="hijri" id="hijri"></div>
+    <div class="next glass"><b id="nextLbl"></b><span id="nextCd"></span></div>
+  </section>
+
+  <aside class="side">
+    <div class="wx glass" id="wx" style="display:none">
+      <div class="now"><svg class="ic" id="wIcon" viewBox="0 0 64 64"></svg><div class="t" id="wTemp"></div><div class="d"><b id="wDesc"></b><span id="wMM"></span></div></div>
+      <div class="days" id="wDays"></div>
+    </div>
+    <div class="card glass">
+      <h3><span id="cTitle" style="opacity:1;font-weight:700"></span><span id="cCount"></span></h3>
+      <div id="body"></div>
+    </div>
+  </aside>
+
+  <footer class="prayers glass" id="prayers"></footer>
+  <div class="ticker" id="ticker" style="display:none"><div class="lbl">أخبار</div><div class="run"><span id="tickText"></span></div></div>
+</div>
+
+<div id="overlay"><h1 id="ovTitle"></h1><p id="ovSub"></p><div class="cd" id="ovCd"></div></div>
+<div id="night"></div>
+
+<script>
+{
+/* ================= الإعدادات ================= */
+const CFG = {
+  city: "الرياض", lat: 24.7136, lng: 46.6753, tz: 3,
+  fajrAngle: 18.5, ishaMinutes: 90,                       // أم القرى
+  iqama: {fajr:25, dhuhr:20, asr:20, maghrib:10, isha:20}, // دقائق بين الأذان والإقامة
+  adhanScreenMinutes: true,                                // شاشة الأذان والإقامة
+  nightDim: true,                                          // تعتيم بالليل
+  newsRss: "https://feeds.bbci.co.uk/arabic/rss.xml"
+};
+const qs = new URLSearchParams(location.search);
+if (qs.get("lat")) CFG.lat = +qs.get("lat");
+if (qs.get("lng")) CFG.lng = +qs.get("lng");
+if (qs.get("city")) CFG.city = qs.get("city");
+let OFFSET = 0;                                            // للتجربة: ?at=12:05
+if (qs.get("at")) { const [h,m] = qs.get("at").split(":").map(Number); const d = new Date(); d.setHours(h,m,0,0); OFFSET = d - Date.now(); }
+const NOW = () => new Date(Date.now() + OFFSET);
+
+const $ = id => document.getElementById(id);
+if (qs.has("lite") || (navigator.deviceMemory && navigator.deviceMemory <= 2)) document.body.classList.add("lite");
+const AR = n => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+const pad = n => String(n).padStart(2,"0");
+
+/* ================= مواقيت الصلاة ================= */
+const rad = d => d*Math.PI/180, deg = r => r*180/Math.PI;
+const fix = (a,b) => { a = a - b*Math.floor(a/b); return a < 0 ? a+b : a; };
+function julian(y,m,d){ if(m<=2){y--;m+=12;} const A=Math.floor(y/100),B=2-A+Math.floor(A/4); return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5; }
+function sunPos(jd){
+  const D=jd-2451545, g=fix(357.529+0.98560028*D,360), q=fix(280.459+0.98564736*D,360);
+  const L=fix(q+1.915*Math.sin(rad(g))+0.020*Math.sin(rad(2*g)),360), e=23.439-0.00000036*D;
+  const RA=fix(deg(Math.atan2(Math.cos(rad(e))*Math.sin(rad(L)),Math.cos(rad(L))))/15,24);
+  return { decl: deg(Math.asin(Math.sin(rad(e))*Math.sin(rad(L)))), eqt: q/15-RA };
+}
+function prayerTimes(date){
+  const lat=CFG.lat, lng=CFG.lng;
+  const jd = julian(date.getFullYear(), date.getMonth()+1, date.getDate()) - lng/(15*24);
+  const noon = t => fix(12 - sunPos(jd+t).eqt, 24);
+  const angleTime = (a,t,ccw) => { const d=sunPos(jd+t).decl;
+    const T=deg(Math.acos((-Math.sin(rad(a))-Math.sin(rad(d))*Math.sin(rad(lat)))/(Math.cos(rad(d))*Math.cos(rad(lat)))))/15;
+    return noon(t) + (ccw ? -T : T); };
+  const asrTime = t => { const d=sunPos(jd+t).decl; return angleTime(-deg(Math.atan(1/(1+Math.tan(rad(Math.abs(lat-d)))))),t); };
+  let t = {fajr:5,sunrise:6,dhuhr:12,asr:13,maghrib:18};
+  for (let i=0;i<2;i++) t = { fajr:angleTime(CFG.fajrAngle,t.fajr/24,true), sunrise:angleTime(0.833,t.sunrise/24,true), dhuhr:noon(t.dhuhr/24), asr:asrTime(t.asr/24), maghrib:angleTime(0.833,t.maghrib/24) };
+  const adj = CFG.tz - lng/15; for (const k in t) t[k] += adj;
+  t.isha = t.maghrib + (hijriParts(date).month === 9 ? 120 : CFG.ishaMinutes)/60;
+  const out = {}; for (const k in t){ const dt = new Date(date); dt.setHours(0,Math.round(t[k]*60),0,0); out[k]=dt; } return out;
+}
+
+/* ================= التاريخ ================= */
+function hijriParts(d){
+  try{ const p = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura",{day:"numeric",month:"numeric",year:"numeric"}).formatToParts(d);
+    const g = k => +p.find(x=>x.type===k).value.replace(/\D/g,""); return {day:g("day"),month:g("month"),year:g("year")}; }
+  catch(e){ return {day:0,month:0,year:0}; }
+}
+const HM = ["محرم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
+const GM = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const DAYS = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const fmt12 = d => (d.getHours()%12||12)+":"+pad(d.getMinutes());
+const ampm = d => d.getHours()<12 ? "ص" : "م";
+const dur = ms => { const s=Math.max(0,Math.floor(ms/1000)), h=Math.floor(s/3600), m=Math.floor(s%3600/60); return h ? `${h}:${pad(m)}:${pad(s%60)}` : `${pad(m)}:${pad(s%60)}`; };
+
+/* ================= المحتوى ================= */
+const MORNING = [
+  ["سيد الاستغفار","اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك عليّ، وأبوء بذنبي فاغفر لي، فإنه لا يغفر الذنوب إلا أنت.","مرة واحدة"],
+  ["","أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.","مرة واحدة"],
+  ["","اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.","مرة واحدة"],
+  ["","بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء، وهو السميع العليم.","ثلاث مرات"],
+  ["","رضيت بالله ربًا، وبالإسلام دينًا، وبمحمد ﷺ نبيًا.","ثلاث مرات"],
+  ["","يا حي يا قيوم برحمتك أستغيث، أصلح لي شأني كله، ولا تكلني إلى نفسي طرفة عين.","مرة واحدة"],
+  ["","اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت.","ثلاث مرات"],
+  ["","سبحان الله وبحمده.","مئة مرة"],
+  ["","لا إله إلا الله وحده لا شريك له، له الملك وله الحمد، وهو على كل شيء قدير.","عشر مرات"]
+];
+const EVENING = MORNING.map(([t,x,r]) => [t, x.replace("أصبحنا وأصبح","أمسينا وأمسى").replace("بك أصبحنا، وبك أمسينا","بك أمسينا، وبك أصبحنا").replace("وإليك النشور","وإليك المصير"), r]);
+EVENING[3] = ["","أعوذ بكلمات الله التامات من شر ما خلق.","ثلاث مرات"];
+const GENERAL = [
+  ["","سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر.",""],
+  ["","لا حول ولا قوة إلا بالله.",""],
+  ["","اللهم صلِّ وسلم على نبينا محمد.",""],
+  ["","أستغفر الله العظيم وأتوب إليه.",""]
+];
+const AYAT = [
+  ["أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ","الرعد: ٢٨"],
+  ["فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ","البقرة: ١٥٢"],
+  ["فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ، إِنَّ مَعَ الْعُسْرِ يُسْرًا","الشرح: ٥-٦"],
+  ["وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا ، وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ","الطلاق: ٢-٣"],
+  ["وَقُل رَّبِّ زِدْنِي عِلْمًا","طه: ١١٤"],
+  ["وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ","غافر: ٦٠"],
+  ["وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ","الضحى: ٥"],
+  ["رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ","البقرة: ٢٠١"],
+  ["وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ","الحديد: ٤"],
+  ["وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ","البقرة: ١٨٦"],
+  ["وَاصْبِرْ فَإِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ","هود: ١١٥"],
+  ["لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ","إبراهيم: ٧"]
+];
+const AHADITH = [
+  ["إنما الأعمال بالنيات، وإنما لكل امرئ ما نوى.","متفق عليه"],
+  ["من حسن إسلام المرء تركه ما لا يعنيه.","رواه الترمذي"],
+  ["لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه.","متفق عليه"],
+  ["تبسمك في وجه أخيك لك صدقة.","رواه الترمذي"],
+  ["أحب الأعمال إلى الله أدومها وإن قل.","متفق عليه"],
+  ["من كان يؤمن بالله واليوم الآخر فليقل خيرًا أو ليصمت.","متفق عليه"],
+  ["خيركم من تعلم القرآن وعلمه.","رواه البخاري"],
+  ["الكلمة الطيبة صدقة.","متفق عليه"],
+  ["كلمتان خفيفتان على اللسان، ثقيلتان في الميزان، حبيبتان إلى الرحمن: سبحان الله وبحمده، سبحان الله العظيم.","متفق عليه"],
+  ["الدين النصيحة.","رواه مسلم"]
+];
+const dayIndex = d => Math.floor((d - new Date(d.getFullYear(),0,0)) / 864e5);
+
+let seq = [], sIdx = 0, seqKey = "";
+function buildSeq(now, pt){
+  let list = GENERAL, title = "ذكر";
+  if (now >= pt.fajr && now < new Date(pt.dhuhr - 3600e3)) { list = MORNING; title = "أذكار الصباح"; }
+  else if (now >= pt.asr && now < pt.isha) { list = EVENING; title = "أذكار المساء"; }
+  const di = dayIndex(now), a = AYAT[di % AYAT.length], h = AHADITH[di % AHADITH.length];
+  const dh = list.map((x,i) => ({kind:"dhikr", title, count:`${AR(i+1)}/${AR(list.length)}`, x}));
+  const half = Math.ceil(dh.length/2);
+  seq = [{kind:"ayah",title:"آية اليوم",a}, ...dh.slice(0,half), {kind:"hadith",title:"حديث اليوم",h}, ...dh.slice(half)];
+  if (now.getDay() === 5) seq.splice(1,0,{kind:"friday",title:"يوم الجمعة"});
+  seqKey = title + di;
+}
+function showCard(){
+  const now = NOW(); const pt = getPT(now);
+  const keyTitle = (now >= pt.fajr && now < new Date(pt.dhuhr - 3600e3)) ? "أذكار الصباح" : (now >= pt.asr && now < pt.isha) ? "أذكار المساء" : "ذكر";
+  if (seqKey !== keyTitle + dayIndex(now)) { buildSeq(now, pt); sIdx = 0; }
+  const it = seq[sIdx % seq.length]; sIdx++;
+  const b = $("body"); b.classList.add("hide");
+  setTimeout(() => {
+    $("cTitle").textContent = it.title; $("cCount").textContent = it.count || "";
+    if (it.kind === "ayah") b.innerHTML = `<div class="ayah">﴿${it.a[0]}﴾</div><div class="src center">${it.a[1]}</div>`;
+    else if (it.kind === "hadith") b.innerHTML = `<div class="txt center">قال رسول الله ﷺ: «${it.h[0]}»</div><div class="src center">${it.h[1]}</div>`;
+    else if (it.kind === "friday") b.innerHTML = `<div class="txt center">لا تنسَ قراءة سورة الكهف<br>وأكثروا من الصلاة على النبي ﷺ</div>`;
+    else b.innerHTML = (it.x[0] ? `<div class="src" style="margin:0 0 1vh">${it.x[0]}</div>` : "") + `<div class="txt">${it.x[1]}</div>` + (it.x[2] ? `<div class="src">${it.x[2]}</div>` : "");
+    b.classList.remove("hide");
+  }, 800);
+}
+
+/* ================= الطقس ================= */
+const WMAP = {0:["صحو","sun"],1:["صحو غالبًا","sun"],2:["غائم جزئيًا","partly"],3:["غائم","cloud"],45:["ضباب","fog"],48:["ضباب","fog"],51:["رذاذ","rain"],53:["رذاذ","rain"],55:["رذاذ","rain"],61:["مطر خفيف","rain"],63:["مطر","rain"],65:["مطر غزير","rain"],80:["زخات مطر","rain"],81:["زخات مطر","rain"],82:["زخات غزيرة","rain"],95:["عاصفة رعدية","storm"],96:["عاصفة رعدية","storm"],99:["عاصفة رعدية","storm"]};
+const ICONS = {
+  sun:`<circle cx="32" cy="32" r="12" fill="#ffd34d"/><g stroke="#ffd34d" stroke-width="4" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(a=>`<line x1="32" y1="6" x2="32" y2="13" transform="rotate(${a} 32 32)"/>`).join("")}</g>`,
+  moon:`<path d="M40 10a22 22 0 1 0 14 34A18 18 0 0 1 40 10z" fill="#f4e7b5"/>`,
+  partly:`<circle cx="24" cy="24" r="10" fill="#ffd34d"/><path d="M20 50h26a10 10 0 0 0 0-20 14 14 0 0 0-26 4 8 8 0 0 0 0 16z" fill="#fff"/>`,
+  cloud:`<path d="M16 48h32a11 11 0 0 0 0-22 15 15 0 0 0-29 4 9 9 0 0 0-3 18z" fill="#e8eef4"/>`,
+  fog:`<g stroke="#e8eef4" stroke-width="4" stroke-linecap="round"><line x1="12" y1="24" x2="52" y2="24"/><line x1="8" y1="34" x2="48" y2="34"/><line x1="14" y1="44" x2="54" y2="44"/></g>`,
+  rain:`<path d="M16 38h32a10 10 0 0 0 0-20 14 14 0 0 0-27 4 8 8 0 0 0-5 16z" fill="#e8eef4"/><g stroke="#7cc4ff" stroke-width="3" stroke-linecap="round"><line x1="22" y1="44" x2="19" y2="54"/><line x1="32" y1="44" x2="29" y2="54"/><line x1="42" y1="44" x2="39" y2="54"/></g>`,
+  storm:`<path d="M16 36h32a10 10 0 0 0 0-20 14 14 0 0 0-27 4 8 8 0 0 0-5 16z" fill="#c9d3dc"/><path d="M34 38l-8 12h7l-4 10 12-14h-7l4-8z" fill="#ffd34d"/>`
+};
+async function loadWeather(){
+  try{
+    const u = `https://api.open-meteo.com/v1/forecast?latitude=${CFG.lat}&longitude=${CFG.lng}&current=temperature_2m,weather_code,is_day,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
+    const j = await (await fetch(u)).json();
+    const c = j.current, [desc,ic] = WMAP[c.weather_code] || ["","cloud"];
+    $("wTemp").textContent = Math.round(c.temperature_2m) + "°";
+    $("wDesc").textContent = `${CFG.city} · ${desc}`;
+    $("wMM").textContent = `${AR(Math.round(j.daily.temperature_2m_max[0]))}° / ${AR(Math.round(j.daily.temperature_2m_min[0]))}° · رطوبة ${AR(c.relative_humidity_2m)}٪`;
+    $("wIcon").innerHTML = ICONS[(ic==="sun" && !c.is_day) ? "moon" : ic];
+    $("wDays").innerHTML = [1,2,3].map(i => { const d = new Date(j.daily.time[i]+"T12:00"); const w = WMAP[j.daily.weather_code[i]] || ["","cloud"];
+      return `<div class="day">${DAYS[d.getDay()]}<svg viewBox="0 0 64 64">${ICONS[w[1]]}</svg><i>${Math.round(j.daily.temperature_2m_max[i])}° / ${Math.round(j.daily.temperature_2m_min[i])}°</i></div>`; }).join("");
+    $("wx").style.display = "";
+  }catch(e){}
+}
+
+/* ================= الأخبار ================= */
+async function loadNews(){
+  try{
+    const j = await (await fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(CFG.newsRss))).json();
+    if (j.status !== "ok" || !j.items.length) return;
+    const txt = j.items.slice(0,12).map(i => i.title.trim()).join("   ◆   ");
+    const s = $("tickText"); s.textContent = txt;
+    s.style.animationDuration = Math.max(60, txt.length * 0.22) + "s";
+    $("ticker").style.display = "";
+  }catch(e){}
+}
+
+/* ================= السماء والأفق ================= */
+function drawCity(){
+  let s = "", x = 0, seed = 7; const rnd = () => (seed = (seed*9301+49297)%233280)/233280;
+  const fills = ["url(#b1)","url(#b2)","url(#b3)"];
+  while (x < 1600){ const w = 50+rnd()*90, h = 140+rnd()*300, f = fills[Math.floor(rnd()*3)];
+    s += `<rect x="${x}" y="${600-h}" width="${w}" height="${h}" fill="${f}"/><rect x="${x}" y="${600-h}" width="${w}" height="${h}" fill="url(#win)"/>`; x += w + rnd()*6; }
+  s += `<path d="M1040 600V170l30-25 30 25v430z" fill="url(#b3)"/><rect x="1040" y="170" width="60" height="430" fill="url(#win)"/>`;
+  s += `<path d="M560 600V110q35-40 70 0v490z" fill="url(#b1)"/><rect x="560" y="120" width="70" height="480" fill="url(#win)"/>`;
+  $("bldgs").innerHTML = s;
+}
+function paintSky(now, pt){
+  const t = now.getTime(), sr = pt.sunrise.getTime(), ss = pt.maghrib.getTime(), H = 3600e3;
+  let bg;
+  if (t < sr - H || t > ss + H) bg = "linear-gradient(#050b1d,#132548 60%,#24365a)";
+  else if (t < sr + H) bg = "linear-gradient(#2a3f73,#c4708a 60%,#f2b47a)";
+  else if (t > ss - H) bg = "linear-gradient(#24407a,#e07b5b 60%,#f6c06b)";
+  else bg = "linear-gradient(#2f78c4,#7fb5e6 55%,#dbe9f4)";
+  $("sky").style.background = bg;
+  if (CFG.nightDim){ const late = new Date(pt.isha.getTime() + 3*H), early = new Date(pt.fajr.getTime() - 45*60e3);
+    $("night").style.opacity = (now > late || now < early) ? .45 : 0; }
+}
+
+/* ================= الصلاة ================= */
+const PN = [["fajr","الفجر"],["sunrise","الشروق"],["dhuhr","الظهر"],["asr","العصر"],["maghrib","المغرب"],["isha","العشاء"]];
+const pname = (k, d) => (k === "dhuhr" && d.getDay() === 5) ? "الجمعة" : PN.find(p => p[0] === k)[1];
+let ptCache = {}; const getPT = d => { const k = d.toDateString(); return ptCache[k] || (ptCache = {[k]: prayerTimes(d)})[k]; };
+
+function prayerState(now){
+  const pt = getPT(now);
+  let next = PN.find(([k]) => pt[k] > now), nextTime;
+  if (next) nextTime = pt[next[0]];
+  else { next = PN[0]; const tm = new Date(now); tm.setDate(tm.getDate()+1); nextTime = prayerTimes(tm).fajr; }
+  // هل نحن بين الأذان والإقامة؟
+  let active = null;
+  for (const [k] of PN) { if (k === "sunrise") continue; const iq = new Date(pt[k].getTime() + CFG.iqama[k]*60e3);
+    if (now >= pt[k] && now < iq) active = {k, adhan: pt[k], iqama: iq}; }
+  return {pt, next, nextTime, active};
+}
+function renderPrayers(now, st){
+  const {pt, next, nextTime} = st, left = nextTime - now;
+  $("prayers").innerHTML = PN.map(([k]) => {
+    const isNext = k === next[0], t = (isNext && !(pt[k] > now)) ? nextTime : pt[k];
+    const iq = CFG.iqama[k] ? `الإقامة +${AR(CFG.iqama[k])} د` : "";
+    return `<div class="p${isNext?" next-p":""}${isNext && left < 10*60e3 ? " soon":""}"><b>${pname(k,t)}</b><i>${fmt12(t)} <small>${ampm(t)}</small></i><em>${iq}</em></div>`;
+  }).join("");
+  $("nextLbl").textContent = next[0] === "sunrise" ? "الشروق بعد" : `أذان ${pname(next[0], nextTime)} بعد`;
+  $("nextCd").textContent = dur(left);
+}
+function renderOverlay(now, st){
+  const ov = $("overlay"), a = st.active;
+  if (!CFG.adhanScreenMinutes || !a) { ov.classList.remove("on"); return; }
+  ov.classList.add("on");
+  const n = pname(a.k, now), sinceAdhan = now - a.adhan;
+  $("ovTitle").textContent = sinceAdhan < 3*60e3 ? `حان الآن موعد أذان ${n}` : `صلاة ${n}`;
+  $("ovSub").textContent = "الإقامة بعد";
+  $("ovCd").textContent = dur(a.iqama - now);
+}
+
+/* ================= التشغيل ================= */
+function tick(){
+  const now = NOW(), st = prayerState(now);
+  $("time").textContent = fmt12(now); $("ampm").textContent = ampm(now);
+  $("greg").textContent = `${DAYS[now.getDay()]}، ${AR(now.getDate())} ${GM[now.getMonth()]} ${AR(now.getFullYear())}`;
+  const hj = hijriParts(now); $("hijri").textContent = hj.year ? `${AR(hj.day)} ${HM[hj.month-1]} ${AR(hj.year)} هـ` : "";
+  renderPrayers(now, st); renderOverlay(now, st); paintSky(now, st.pt);
+}
+drawCity(); tick(); setInterval(tick, 1000);
+showCard(); setInterval(showCard, 15000);
+loadWeather(); setInterval(loadWeather, 30*60e3);
+loadNews(); setInterval(loadNews, 20*60e3);
+setInterval(() => { const n = new Date(); if (n.getHours()===3 && n.getMinutes()===0 && n.getSeconds()<2) location.reload(); }, 1000);
+}
+</script>
+</body>
+</html>
