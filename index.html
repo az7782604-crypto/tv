@@ -9,10 +9,12 @@
 :root{--glass:rgba(8,22,42,.42);--line:rgba(255,255,255,.16);--gold:#ffd34d}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;background:#0b1830;color:#fff;font-family:Tajawal,Tahoma,Arial,sans-serif;cursor:none}
-#sky{position:fixed;inset:0;transition:background 90s linear}
-#city{position:fixed;left:0;right:0;bottom:0;width:100%;height:60vh}
-#shade{position:fixed;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,.5))}
-.wrap{position:relative;height:100vh;display:grid;grid-template-columns:1.1fr 1fr;grid-template-rows:1fr auto auto;gap:1.8vh 2.6vw;padding:3.6vh 3.6vw 0}
+#sky{position:fixed;inset:0;background:#0b1830}
+.bg{position:fixed;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 4s}
+.bg.on{opacity:1}
+#shade{position:fixed;inset:0;background:linear-gradient(to left,rgba(0,0,0,.45),rgba(0,0,0,.05) 45%,rgba(0,0,0,.35)),linear-gradient(rgba(0,0,0,.15),transparent 30%,rgba(0,0,0,.55))}
+#credit{position:fixed;left:1vw;bottom:.6vh;font-size:1.3vh;opacity:.5;z-index:1}
+.wrap{position:relative;height:100vh;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr) auto;gap:2vh 2.6vw;padding:3.6vh 3.6vw 3.4vh}
 .glass{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:2vh}
 .main{display:flex;flex-direction:column;text-shadow:0 2px 18px rgba(0,0,0,.35)}
 .clock{font-weight:300;font-size:18vh;line-height:.95;direction:ltr;display:flex;align-items:flex-end;justify-content:flex-end;gap:1vw;align-self:flex-start}
@@ -24,7 +26,26 @@ html,body{height:100%;overflow:hidden;background:#0b1830;color:#fff;font-family:
 .next b{font-size:2.6vh;font-weight:500;opacity:.85}
 .next span{font-size:5vh;font-weight:500;color:var(--gold);direction:ltr;font-variant-numeric:tabular-nums}
 .side{display:flex;flex-direction:column;gap:1.8vh;min-height:0}
-.wx{padding:2vh 1.8vw;display:grid;grid-template-columns:auto 1fr;gap:1.4vw;align-items:center}
+.hil{padding:1.8vh 1.8vw}
+.hil h3,.news h3{font-size:2.2vh;font-weight:700;display:flex;align-items:center;gap:.7vw;margin-bottom:1.2vh}
+.hil h3 img{width:3.4vh;height:3.4vh}
+.hil h3 span,.news h3 span{margin-inline-start:auto;font-weight:400;font-size:1.8vh;opacity:.65}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:1.6vw}
+.match .lbl{font-size:1.8vh;opacity:.7;margin-bottom:.6vh}
+.teams{display:flex;align-items:center;gap:.6vw;font-size:2.3vh;font-weight:500}
+.teams img{width:3.2vh;height:3.2vh;flex:none}
+.teams .sc{unicode-bidi:isolate;font-size:3.4vh;font-weight:700;color:var(--gold);padding:0 .4vw;white-space:nowrap;direction:rtl}
+.teams .vs{opacity:.6;padding:0 .3vw}
+.match .when{font-size:1.9vh;opacity:.8;margin-top:.5vh}
+.match .res{display:inline-block;font-size:1.6vh;font-weight:700;padding:.1vh .6vw;border-radius:.6vh;margin-inline-start:.5vw}
+.res.w{background:#1e8a4c}.res.d{background:#6b7280}.res.l{background:#b3202a}
+.hnews{margin-top:1.4vh;padding-top:1.2vh;border-top:1px solid var(--line);font-size:2vh;line-height:1.5;min-height:6vh;transition:opacity .8s}
+.news{padding:1.6vh 1.8vw;display:grid;grid-template-columns:auto 1fr;gap:1.2vw;align-items:center}
+.news .ni{width:6vh;height:6vh;border-radius:1.4vh;background:#1e7a46;display:grid;place-items:center}
+.news .ni svg{width:3.6vh;height:3.6vh}
+.news .nt{font-size:2.2vh;line-height:1.5;transition:opacity .8s}
+.news .ns{font-size:1.6vh;opacity:.6;margin-top:.3vh}
+.wx{margin-top:2.4vh;padding:1.6vh 1.6vw;display:grid;grid-template-columns:auto auto;gap:1.4vw;align-items:center;align-self:flex-start}
 .wx .now{display:flex;align-items:center;gap:1vw}
 .wx .ic{width:8vh;height:8vh}
 .wx .t{font-size:7vh;font-weight:300;direction:ltr}
@@ -38,8 +59,8 @@ html,body{height:100%;overflow:hidden;background:#0b1830;color:#fff;font-family:
 .card h3{font-size:2.3vh;font-weight:700;display:flex;justify-content:space-between;margin-bottom:1.4vh}
 .card h3 span{font-weight:400;opacity:.65}
 #body{flex:1;transition:opacity .8s;display:flex;flex-direction:column;justify-content:center}
-#body .txt{font-size:3vh;line-height:1.8}
-#body .ayah{font-family:Amiri,serif;font-size:4.2vh;line-height:1.9;text-align:center}
+#body .txt{font-size:2.7vh;line-height:1.75}
+#body .ayah{font-family:Amiri,serif;font-size:3.6vh;line-height:1.9;text-align:center}
 #body .src{font-size:2vh;opacity:.7;margin-top:1.2vh}
 #body .center{text-align:center}
 .prayers{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,1fr);overflow:hidden}
@@ -53,11 +74,6 @@ html,body{height:100%;overflow:hidden;background:#0b1830;color:#fff;font-family:
 .p.next-p b,.p.next-p i{color:var(--gold)}
 .p.soon{animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{50%{background:rgba(255,211,77,.36)}}
-.ticker{grid-column:1/-1;margin:0 -3.6vw;height:5.4vh;background:rgba(0,0,0,.55);display:flex;align-items:center;overflow:hidden;font-size:2.5vh}
-.ticker .lbl{flex:none;background:#b3202a;height:100%;display:flex;align-items:center;padding:0 1.6vw;font-weight:700;z-index:1}
-.ticker .run{flex:1;overflow:hidden;white-space:nowrap;position:relative;height:100%;display:flex;align-items:center}
-.ticker .run span{display:inline-block;padding-inline-start:100%;animation:tick linear infinite}
-@keyframes tick{to{transform:translateX(100%)}}
 #overlay{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(18,40,70,.92),rgba(3,8,18,.97));text-align:center;z-index:5}
 #overlay.on{display:flex}
 #overlay h1{font-size:9vh;font-weight:700;color:var(--gold)}
@@ -66,21 +82,15 @@ html,body{height:100%;overflow:hidden;background:#0b1830;color:#fff;font-family:
 #night{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity 60s;z-index:4}
 .hide{opacity:0}
 .lite .glass{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(8,20,38,.66)}
-.lite #sky{transition:none}
+.lite .bg{transition:none}
 </style>
 </head>
 <body>
 <div id="sky"></div>
-<svg id="city" viewBox="0 0 1600 600" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-  <defs>
-    <linearGradient id="b1" x1="0" x2="1"><stop offset="0" stop-color="#2d4258"/><stop offset=".55" stop-color="#5d7b93"/><stop offset="1" stop-color="#22344a"/></linearGradient>
-    <linearGradient id="b2" x1="0" x2="1"><stop offset="0" stop-color="#7a6a55"/><stop offset=".5" stop-color="#c9a77a"/><stop offset="1" stop-color="#6b5a47"/></linearGradient>
-    <linearGradient id="b3" x1="0" x2="1"><stop offset="0" stop-color="#1f3b52"/><stop offset=".5" stop-color="#3f7a9c"/><stop offset="1" stop-color="#173045"/></linearGradient>
-    <pattern id="win" width="10" height="14" patternUnits="userSpaceOnUse"><rect x="1" y="2" width="8" height="2" fill="#fff" opacity=".18"/></pattern>
-  </defs>
-  <g id="bldgs"></g>
-</svg>
+<div class="bg" id="bgDay"></div>
+<div class="bg" id="bgNight"></div>
 <div id="shade"></div>
+<div id="credit"></div>
 
 <div class="wrap">
   <section class="main">
@@ -88,21 +98,29 @@ html,body{height:100%;overflow:hidden;background:#0b1830;color:#fff;font-family:
     <div class="date" id="greg"></div>
     <div class="hijri" id="hijri"></div>
     <div class="next glass"><b id="nextLbl"></b><span id="nextCd"></span></div>
-  </section>
-
-  <aside class="side">
     <div class="wx glass" id="wx" style="display:none">
       <div class="now"><svg class="ic" id="wIcon" viewBox="0 0 64 64"></svg><div class="t" id="wTemp"></div><div class="d"><b id="wDesc"></b><span id="wMM"></span></div></div>
       <div class="days" id="wDays"></div>
     </div>
+  </section>
+
+  <aside class="side">
     <div class="card glass">
       <h3><span id="cTitle" style="opacity:1;font-weight:700"></span><span id="cCount"></span></h3>
       <div id="body"></div>
     </div>
+    <div class="hil glass" id="hil" style="display:none">
+      <h3><img id="hBadge" alt="" onerror="this.style.display='none'">الهلال<span id="hComp"></span></h3>
+      <div class="mrow"><div class="match" id="hLast"></div><div class="match" id="hNext"></div></div>
+      <div class="hnews" id="hNews"></div>
+    </div>
+    <div class="news glass" id="news" style="display:none">
+      <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="17" y2="13"/><line x1="7" y1="17" x2="13" y2="17"/></svg></div>
+      <div><div class="nt" id="nText"></div><div class="ns" id="nSrc"></div></div>
+    </div>
   </aside>
 
   <footer class="prayers glass" id="prayers"></footer>
-  <div class="ticker" id="ticker" style="display:none"><div class="lbl">أخبار</div><div class="run"><span id="tickText"></span></div></div>
 </div>
 
 <div id="overlay"><h1 id="ovTitle"></h1><p id="ovSub"></p><div class="cd" id="ovCd"></div></div>
@@ -117,7 +135,10 @@ const CFG = {
   iqama: {fajr:25, dhuhr:20, asr:20, maghrib:10, isha:20}, // دقائق بين الأذان والإقامة
   adhanScreenMinutes: true,                                // شاشة الأذان والإقامة
   nightDim: true,                                          // تعتيم بالليل
-  newsRss: "https://feeds.bbci.co.uk/arabic/rss.xml"
+  hilalId: "136013",
+  sportsKey: "123",
+  bgDay:   {url:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Khobar_water_tower.jpg/1920px-Khobar_water_tower.jpg", credit:"برج المياه، الخبر · Francisco Anzola · CC BY 2.0"},
+  bgNight: {url:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Khobar_At_night.jpg/1920px-Khobar_At_night.jpg", credit:"الخبر ليلًا · Ahmadtt3t · ملكية عامة"}
 };
 const qs = new URLSearchParams(location.search);
 if (qs.get("lat")) CFG.lat = +qs.get("lat");
@@ -263,8 +284,8 @@ async function loadWeather(){
     const j = await (await fetch(u)).json();
     const c = j.current, [desc,ic] = WMAP[c.weather_code] || ["","cloud"];
     $("wTemp").textContent = Math.round(c.temperature_2m) + "°";
-    $("wDesc").textContent = `${CFG.city} · ${desc}`;
-    $("wMM").textContent = `${AR(Math.round(j.daily.temperature_2m_max[0]))}° / ${AR(Math.round(j.daily.temperature_2m_min[0]))}° · رطوبة ${AR(c.relative_humidity_2m)}٪`;
+    $("wDesc").textContent = `${CFG.city}، ${desc}`;
+    $("wMM").textContent = `${AR(Math.round(j.daily.temperature_2m_max[0]))}° / ${AR(Math.round(j.daily.temperature_2m_min[0]))}°، رطوبة ${AR(c.relative_humidity_2m)}٪`;
     $("wIcon").innerHTML = ICONS[(ic==="sun" && !c.is_day) ? "moon" : ic];
     $("wDays").innerHTML = [1,2,3].map(i => { const d = new Date(j.daily.time[i]+"T12:00"); const w = WMAP[j.daily.weather_code[i]] || ["","cloud"];
       return `<div class="day">${DAYS[d.getDay()]}<svg viewBox="0 0 64 64">${ICONS[w[1]]}</svg><i>${Math.round(j.daily.temperature_2m_max[i])}° / ${Math.round(j.daily.temperature_2m_min[i])}°</i></div>`; }).join("");
@@ -273,35 +294,61 @@ async function loadWeather(){
 }
 
 /* ================= الأخبار ================= */
-async function loadNews(){
+const gnews = q => "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent("https://news.google.com/rss/search?q=" + encodeURIComponent(q) + "&hl=ar&gl=SA&ceid=SA:ar");
+const splitTitle = t => { const i = t.lastIndexOf(" - "); return i > 0 ? [t.slice(0,i), t.slice(i+3)] : [t, ""]; };
+async function getFeed(q){ const j = await (await fetch(gnews(q))).json(); if (j.status !== "ok") throw 0; return j.items.map(i => splitTitle(i.title.trim())); }
+let saNews = [], saIdx = 0, hNews = [], hIdx = 0;
+async function loadSaNews(){ try{ saNews = (await getFeed("السعودية when:1d")).slice(0,15); $("news").style.display = ""; }catch(e){} }
+async function loadHilalNews(){ try{ hNews = (await getFeed("نادي الهلال when:3d")).slice(0,10); }catch(e){} }
+function rotate(elText, list, idxRef, elSrc){
+  if (!list.length) return idxRef; const [t,src] = list[idxRef % list.length];
+  elText.style.opacity = 0; setTimeout(() => { elText.textContent = t; if (elSrc) elSrc.textContent = src; elText.style.opacity = 1; }, 800);
+  return idxRef + 1;
+}
+
+/* ================= الهلال ================= */
+const TEAMS = {"Al-Hilal":"الهلال","Al-Nassr":"النصر","Al-Ittihad":"الاتحاد","Al-Ahli":"الأهلي","Al-Shabab":"الشباب","Al-Ettifaq":"الاتفاق","Al-Taawoun":"التعاون","Al-Fateh":"الفتح","Al-Fayha":"الفيحاء","Al-Khaleej":"الخليج","Al-Raed":"الرائد","Al-Riyadh":"الرياض","Al-Okhdood":"الأخدود","Al-Kholood":"الخلود","Al-Qadsiah":"القادسية","Al-Hazem":"الحزم","Damac":"ضمك","Neom":"نيوم","Al-Najma":"النجمة","Al-Wehda":"الوحدة","Al-Orobah":"العروبة","Al-Feiha":"الفيحاء","Shabab Al-Ahli Dubai":"شباب الأهلي دبي","Al-Sadd":"السد","Al-Gharafa":"الغرافة","Al Wahda":"الوحدة الإماراتي","Al-Ain":"العين","Neftchi Fergana":"نفتشي فرغانة"};
+const LEAGUES = {"Saudi-Arabian Pro League":"دوري روشن","AFC Champions League Elite":"أبطال آسيا للنخبة","Saudi King Cup":"كأس الملك","Saudi Super Cup":"كأس السوبر","FIFA Club World Cup":"كأس العالم للأندية"};
+const tn = n => TEAMS[n] || n, ln = n => LEAGUES[n] || n;
+const evDate = e => new Date((e.strTimestamp || (e.dateEvent+"T"+(e.strTime||"00:00:00"))) + (/[Z+]/.test(e.strTimestamp||"") ? "" : "Z"));
+const badge = u => u ? `<img src="${u}/tiny" onerror="this.onerror=()=>this.remove();this.src='${u}'" alt="">` : "";
+async function loadHilal(){
   try{
-    const j = await (await fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(CFG.newsRss))).json();
-    if (j.status !== "ok" || !j.items.length) return;
-    const txt = j.items.slice(0,12).map(i => i.title.trim()).join("   ◆   ");
-    const s = $("tickText"); s.textContent = txt;
-    s.style.animationDuration = Math.max(60, txt.length * 0.22) + "s";
-    $("ticker").style.display = "";
+    const base = `https://www.thesportsdb.com/api/v1/json/${CFG.sportsKey}/`;
+    const [L, N] = await Promise.all([fetch(base+"eventslast.php?id="+CFG.hilalId).then(r=>r.json()), fetch(base+"eventsnext.php?id="+CFG.hilalId).then(r=>r.json())]);
+    const last = (L.results||[]).filter(e => e.intHomeScore !== null).sort((a,b) => evDate(b)-evDate(a))[0];
+    const next = (N.events||[]).sort((a,b) => evDate(a)-evDate(b))[0];
+    const now = NOW();
+    if (last){
+      const home = last.idHomeTeam === CFG.hilalId, us = +(home ? last.intHomeScore : last.intAwayScore), them = +(home ? last.intAwayScore : last.intHomeScore);
+      const r = us > them ? ["w","فوز"] : us === them ? ["d","تعادل"] : ["l","خسارة"];
+      const d = evDate(last);
+      $("hLast").innerHTML = `<div class="lbl">آخر نتيجة<span class="res ${r[0]}">${r[1]}</span></div>
+        <div class="teams">${badge(last.strHomeTeamBadge)}${tn(last.strHomeTeam)}<span class="sc">${last.intHomeScore} - ${last.intAwayScore}</span>${tn(last.strAwayTeam)}${badge(last.strAwayTeamBadge)}</div>
+        <div class="when">${ln(last.strLeague)}، ${AR(d.getDate())} ${GM[d.getMonth()]}</div>`;
+      $("hBadge").src = home ? last.strHomeTeamBadge : last.strAwayTeamBadge;
+    }
+    if (next){
+      const d = evDate(next), today = d.toDateString() === now.toDateString();
+      const tm = new Date(now); tm.setDate(tm.getDate()+1); const tomorrow = d.toDateString() === tm.toDateString();
+      const day = today ? "اليوم" : tomorrow ? "بكرة" : `${DAYS[d.getDay()]} ${AR(d.getDate())} ${GM[d.getMonth()]}`;
+      $("hNext").innerHTML = `<div class="lbl">المباراة القادمة</div>
+        <div class="teams">${badge(next.strHomeTeamBadge)}${tn(next.strHomeTeam)}<span class="vs">×</span>${tn(next.strAwayTeam)}${badge(next.strAwayTeamBadge)}</div>
+        <div class="when">${ln(next.strLeague)}، ${day} ${fmt12(d)} ${ampm(d)}</div>`;
+    }
+    if (last || next) $("hil").style.display = "";
   }catch(e){}
 }
 
-/* ================= السماء والأفق ================= */
-function drawCity(){
-  let s = "", x = 0, seed = 7; const rnd = () => (seed = (seed*9301+49297)%233280)/233280;
-  const fills = ["url(#b1)","url(#b2)","url(#b3)"];
-  while (x < 1600){ const w = 50+rnd()*90, h = 140+rnd()*300, f = fills[Math.floor(rnd()*3)];
-    s += `<rect x="${x}" y="${600-h}" width="${w}" height="${h}" fill="${f}"/><rect x="${x}" y="${600-h}" width="${w}" height="${h}" fill="url(#win)"/>`; x += w + rnd()*6; }
-  s += `<path d="M1040 600V170l30-25 30 25v430z" fill="url(#b3)"/><rect x="1040" y="170" width="60" height="430" fill="url(#win)"/>`;
-  s += `<path d="M560 600V110q35-40 70 0v490z" fill="url(#b1)"/><rect x="560" y="120" width="70" height="480" fill="url(#win)"/>`;
-  $("bldgs").innerHTML = s;
+/* ================= الخلفية ================= */
+function setBg(){
+  $("bgDay").style.backgroundImage = `url("${CFG.bgDay.url}")`;
+  $("bgNight").style.backgroundImage = `url("${CFG.bgNight.url}")`;
 }
 function paintSky(now, pt){
-  const t = now.getTime(), sr = pt.sunrise.getTime(), ss = pt.maghrib.getTime(), H = 3600e3;
-  let bg;
-  if (t < sr - H || t > ss + H) bg = "linear-gradient(#050b1d,#132548 60%,#24365a)";
-  else if (t < sr + H) bg = "linear-gradient(#2a3f73,#c4708a 60%,#f2b47a)";
-  else if (t > ss - H) bg = "linear-gradient(#24407a,#e07b5b 60%,#f6c06b)";
-  else bg = "linear-gradient(#2f78c4,#7fb5e6 55%,#dbe9f4)";
-  $("sky").style.background = bg;
+  const H = 3600e3, day = now > new Date(pt.sunrise.getTime() - H/2) && now < new Date(pt.maghrib.getTime() + H/2);
+  $("bgDay").classList.toggle("on", day); $("bgNight").classList.toggle("on", !day);
+  $("credit").textContent = (day ? CFG.bgDay : CFG.bgNight).credit;
   if (CFG.nightDim){ const late = new Date(pt.isha.getTime() + 3*H), early = new Date(pt.fajr.getTime() - 45*60e3);
     $("night").style.opacity = (now > late || now < early) ? .45 : 0; }
 }
@@ -350,10 +397,15 @@ function tick(){
   const hj = hijriParts(now); $("hijri").textContent = hj.year ? `${AR(hj.day)} ${HM[hj.month-1]} ${AR(hj.year)} هـ` : "";
   renderPrayers(now, st); renderOverlay(now, st); paintSky(now, st.pt);
 }
-drawCity(); tick(); setInterval(tick, 1000);
+setBg(); tick(); setInterval(tick, 1000);
 showCard(); setInterval(showCard, 15000);
 loadWeather(); setInterval(loadWeather, 30*60e3);
-loadNews(); setInterval(loadNews, 20*60e3);
+loadHilal(); setInterval(loadHilal, 15*60e3);
+loadSaNews().then(() => { saIdx = rotate($("nText"), saNews, saIdx, $("nSrc")); });
+setTimeout(() => loadHilalNews().then(() => { hIdx = rotate($("hNews"), hNews, hIdx); }), 8000);
+setInterval(loadSaNews, 30*60e3); setTimeout(() => setInterval(loadHilalNews, 30*60e3), 15000);
+setInterval(() => { saIdx = rotate($("nText"), saNews, saIdx, $("nSrc")); }, 12000);
+setInterval(() => { hIdx = rotate($("hNews"), hNews, hIdx); }, 14000);
 setInterval(() => { const n = new Date(); if (n.getHours()===3 && n.getMinutes()===0 && n.getSeconds()<2) location.reload(); }, 1000);
 }
 </script>
