@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إعداد الشاشة</title>
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#0b1830;color:#fff;font:22px/1.5 Tahoma,Arial,sans-serif;padding:4vh 6vw}
+h1{font-size:40px;margin-bottom:8px}
+p{opacity:.75;margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+a{display:block;padding:22px 26px;border-radius:16px;background:#16304f;color:#fff;text-decoration:none;border:3px solid transparent}
+a b{display:block;font-size:28px}
+a span{opacity:.7;font-size:18px}
+a:focus,a:hover{border-color:#ffd34d;background:#1f4470;outline:none}
+.home{background:#1e7a46}
+</style>
+</head>
+<body>
+<h1>إعداد الشاشة</h1>
+<p>تحرك بالأسهم واضغط OK على الزر. جرّب الزر الأول.</p>
+<div class="grid">
+  <a class="home" autofocus href="intent:#Intent;action=android.settings.HOME_SETTINGS;end"><b>١. اختيار الشاشة الرئيسية</b><span>اختر Fully Kiosk Browser</span></a>
+  <a href="intent:#Intent;action=android.settings.MANAGE_DEFAULT_APPS_SETTINGS;end"><b>٢. التطبيقات الافتراضية</b><span>ابحث عن Home / الشاشة الرئيسية</span></a>
+  <a href="intent:#Intent;action=android.settings.action.MANAGE_OVERLAY_PERMISSION;end"><b>٣. الظهور فوق التطبيقات</b><span>فعّله لـ Fully عشان يفتح مع التشغيل</span></a>
+  <a href="intent:#Intent;action=android.settings.DEVICE_INFO_SETTINGS;end"><b>٤. حول الجهاز (الأصلية)</b><span>اضغط ٧ مرات على رقم البناء Build</span></a>
+  <a href="intent:#Intent;action=android.settings.APPLICATION_DEVELOPMENT_SETTINGS;end"><b>٥. خيارات المطوّر</b><span>بعد ما تفعّلها من رقم ٤</span></a>
+  <a href="intent:#Intent;action=android.settings.SETTINGS;end"><b>٦. إعدادات أندرويد الأصلية</b><span>كل الإعدادات</span></a>
+  <a href="intent:#Intent;component=com.android.tv.settings/.MainSettings;end"><b>٧. إعدادات Android TV</b><span>إذا ما فتح رقم ٦</span></a>
+  <a href="./"><b>رجوع للشاشة</b><span>الساعة والمواقيت</span></a>
+</div>
+<script>
+{ const L=[...document.querySelectorAll('a')]; L[0].focus();
+  document.addEventListener('keydown',e=>{const i=L.indexOf(document.activeElement);if(i<0)return;
+    const m={ArrowLeft:1,ArrowRight:-1,ArrowDown:2,ArrowUp:-2}[e.key]; if(m===undefined)return;
+    e.preventDefault(); const n=L[i+m]; if(n)n.focus();}); }
+</script>
+</body>
+</html>
